@@ -69,7 +69,6 @@ function setHistories () {
     fundsHistory.push(Math.round(calcNetworth(player.funds, Positions)));
 };
 
-
 //clock
 setInterval(function(){
     setHistories()
