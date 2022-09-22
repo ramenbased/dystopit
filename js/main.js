@@ -20,20 +20,47 @@ function Position(name, size, entry) {
 
 var Positions = [];
 
+function News(name, text, pricefactor, duration, used) {
+    this.name = name 
+    this.text = text
+    this.pricefactor = pricefactor
+    this.duration = duration 
+    this.used = used
+};
+var News = [
+    new News(
+        Corpos[1].name,
+        "BREAKING: CITYADMIN:CAM CEO REZA CALLS FOR INTERNAL PROBE DUE TO SYNDICATE INTERVENTION.",
+        1.1,
+        50,
+        0
+    ),
+    new News(
+        Corpos[2].name,
+        "BREAKING: SYNDICATE COUNCIL ACCUSES PATENTNX OF CYBERATTACK INTO CHEMICAL COMPOUNDS DATABASE",
+        0.7,
+        10,
+        0
+    ),
+];
+
+console.log(News[getRandomInt(News.length)].text);
+
 function Player(funds) {
     this.funds = funds
 };        
 
 var  player = new Player(1000)
 
-//filler data for pageload
+var globalTicks = 0
+
+//filler data & fundhistory
 var fundsHistory = Array(50) 
 fundsHistory.fill(1000)
 for (var n = 0; n < Corpos.length; n++) {
     let history = Corpos[n].pricehistory
-    console.log(history)
     for (var cycles = 0; cycles <= 200; cycles ++) {
-        var rv = history[history.length -1] * MarketRandomness()
+        var rv = history[history.length -1] * MarketRandomness(1)
         history.push(rv)
         Corpos[n].price = rv
     };
@@ -49,29 +76,38 @@ function calcNetworth(funds, positions) {
     return rv;
 };
 
-function MarketRandomness() {
-    var min = 1.05
-    var max = 0.95
+function countTicks() {
+    globalTicks += 1 
+    console.log(globalTicks)
+};
+
+function MarketRandomness(number) {
+    var min = 1.05 * number
+    var max = 0.95 * number 
     return  Math.random() * (max - min) + min;
 };
 
-function setHistories () {
-    var historyLength = 50
+function getRandomInt(max) {
+    return Math.floor(Math.random() * max);
+};
+
+function setPrices () {
     for (var n = 0; n < Corpos.length; n++) {
-        var alchemy = MarketRandomness()
+        let alchemy = MarketRandomness(1)
         Corpos[n].price *= alchemy 
         Positions[n].size *= alchemy
         if (Corpos[n].pricehistory.length >= 200) {Corpos[n].pricehistory.shift()}
         Corpos[n].pricehistory.push(Corpos[n].price)
     };
 
-    if (fundsHistory.length >= historyLength) {fundsHistory.shift()};
+    if (fundsHistory.length >= 50) {fundsHistory.shift()};
     fundsHistory.push(Math.round(calcNetworth(player.funds, Positions)));
 };
 
 //clock
 setInterval(function(){
-    setHistories()
+    countTicks()
+    setPrices()
     renderPlayer()
     renderWindowPosition()
     chartFunds.update()
@@ -79,7 +115,6 @@ setInterval(function(){
     chartCorpo1.update()
     chartCorpo2.update()
     chartCorpo3.update()
-
 }, 2000);
 
 //events
