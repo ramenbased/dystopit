@@ -1,0 +1,50 @@
+* {
+    background: black;
+    color: orange;
+    font-family: monospace; 
+    font-size: 13pt;
+}
+
+button, select, input{
+    border: 2px solid orange;
+    cursor: pointer;
+}
+
+input {
+    cursor: text;
+}
+
+#chartfundssize {
+    height: 100px;
+}
+
+#size {
+    width: 120px;
+}
+
+#windowmarket {
+    padding-bottom: 40px;
+}
+
+.stockprice {
+    height: 200px;
+    width: 300px;
+    display: inline-block;
+
+}
+
+textarea:focus, input:focus{
+    outline: none;
+}
+
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type=number] {
+  -moz-appearance: textfield;
+}

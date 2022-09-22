@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Dystopit</title>
+        <link rel="stylesheet" href="style/style.css">
+    </head>
+    <body>
+        <div id="ticks">1</div>
+        <div id="windowmarket">
+            <div class="stockprice">PTX<canvas id="PatentNX"></canvas></div>
+            <div class="stockprice">CAM<canvas id="CityAdmin"></canvas></div>
+            <div class="stockprice">SYN<canvas id="The Syndicate""></canvas></div>
+            <div class="stockprice">SRE<canvas id="Saphire Real Estate"></canvas></div>
+        </div>
+        <div id="windowtrade">
+        </div>
+            <select id="corpos" selected></select>
+            <input id="size" type="number" placeholder="ENTER SIZE" autocomplete="off" min="0" step="100"></input>
+            <button id="buy">buy</button>
+            <button id="buymax">buy max</button>
+            <button id="sell">sell</button>
+            <button id="sellmax">sell max</button>
+        </div>
+        <div id="windowfunds"></div>
+        <div id="chartfundssize">
+            <canvas id="chartfunds"></canvas>
+        </div>
+        <div id="windowpositions"></div>
+        
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <script src="js/main.js"></script>
+        <script src="js/charts.js"></script>
+    </body>
+</html>
