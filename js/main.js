@@ -20,28 +20,31 @@ function Position(name, size, entry) {
 
 var Positions = [];
 
-function News(name, text, pricefactor, duration, activeticks) {
+function News(name, text, pricefactor, duration, activeticks, isactive) {
     this.name = name 
     this.text = text
     this.pricefactor = pricefactor
     this.duration = duration 
     this.activeticks = activeticks
+    this.isactive = isactive
 };
-var News = [
+var NewsFeed = [
     new News(
         Corpos[1].name,
         "BREAKING: CITYADMIN:CAM CEO REZA CALLS FOR INTERNAL PROBE DUE TO SYNDICATE INTERVENTION.",
-        1.1,
-        50,
-        0
+        1.01,    //pricefactor
+        4,      //duration
+        20,      //activeticks
+        false,  //isactive
     ),
     new News(
         Corpos[2].name,
         "BREAKING: SYNDICATE COUNCIL ACCUSES PATENTNX OF CYBERATTACK INTO CHEMICAL COMPOUNDS DATABASE",
-        0.7,
-        10,
-        0
-    ),
+        0.99,
+        4,
+        20,
+        false,
+    )
 ];
 
 function Player(funds) {
@@ -76,16 +79,7 @@ function calcNetworth(funds, positions) {
 
 function countTicks() {
     globalTicks += 1 
-    console.log(globalTicks)
-};
-
-function newsTrigger(newscycle){
-    countTicks()
-    if (globalTicks % newscycle === 0) {
-        return getRandomInt(News.length)
-    } else {
-        return null
-    }
+    //console.log(globalTicks)
 };
 
 function MarketRandomness(number) {
@@ -98,30 +92,61 @@ function getRandomInt(max) {
     return Math.floor(Math.random() * max);
 };
 
+function newsTrigger(newscycle){
+    countTicks()
+    if (globalTicks % newscycle === 0) {
+        var n = getRandomInt(NewsFeed.length)
+        NewsFeed[n].isactive = true
+        console.log(NewsFeed[n].text)
+    } else {
+        return null
+    }
+};
+
+function calcPrices(n, i) {
+   let alchemy = MarketRandomness(i)
+   Corpos[n].price *= alchemy 
+   Positions[n].size *= alchemy
+   if (Corpos[n].pricehistory.length >= 200) {Corpos[n].pricehistory.shift()}
+   Corpos[n].pricehistory.push(Corpos[n].price)
+};
+
+function findActiveNews() {
+    rv = null
+    //limited to one news, in future return array of active news??
+    for (var n = 0; n < NewsFeed.length; n++) {
+        if (NewsFeed[n].isactive === true) {
+            rv = n
+        };
+    };
+    //console.log("findActiveNews() returns: " ,rv)
+    return rv
+};
+
 function setPrices () {
+    let activeNews = findActiveNews()
     for (var n = 0; n < Corpos.length; n++) {
-        let alchemy = MarketRandomness(1)
-        Corpos[n].price *= alchemy 
-        Positions[n].size *= alchemy
-        if (Corpos[n].pricehistory.length >= 200) {Corpos[n].pricehistory.shift()}
-        Corpos[n].pricehistory.push(Corpos[n].price)
+        if (activeNews != null && NewsFeed[activeNews].name === Corpos[n].name) {
+            var newsItem = NewsFeed[activeNews]
+            calcPrices(n, newsItem.pricefactor)
+            newsItem.activeticks += 1
+            if (newsItem.activeticks == newsItem.duration) {
+                newsItem.activeticks = 0
+                newsItem.isactive = false
+            };
+            console.log("news0: " + NewsFeed[0].activeticks + "    news1: " + NewsFeed[1].activeticks)
+            } else {
+            calcPrices(n, 1)
+        };
     };
 
     if (fundsHistory.length >= 50) {fundsHistory.shift()};
     fundsHistory.push(Math.round(calcNetworth(player.funds, Positions)));
 };
-//
-
-// News.activeticks <-- counts ative ticks and then timeouts, reset ticks at timeout
-// News.isActive <-- when news is triggered, set to true. So no overlapping events or just not trigger the same news twice.
-// if News.activeticks >= duration, News.isActive = false, and set price back to default randomness.
 
 //clock
 setInterval(function(){
-    let n = newsTrigger(40)
-    if (n != null) {
-        console.log(News[n].text)
-    };
+    newsTrigger(20)
     setPrices()
     renderPlayer()
     renderWindowPosition()
