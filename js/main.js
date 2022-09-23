@@ -33,16 +33,16 @@ var NewsFeed = [
         Corpos[1].name,
         "BREAKING: CITYADMIN:CAM CEO REZA CALLS FOR INTERNAL PROBE DUE TO SYNDICATE INTERVENTION.",
         1.01,    //pricefactor
-        4,      //duration
-        20,      //activeticks
+        20,      //duration
+        0,      //activeticks
         false,  //isactive
     ),
     new News(
         Corpos[2].name,
         "BREAKING: SYNDICATE COUNCIL ACCUSES PATENTNX OF CYBERATTACK INTO CHEMICAL COMPOUNDS DATABASE",
         0.99,
-        4,
         20,
+        0,
         false,
     )
 ];
@@ -146,7 +146,7 @@ function setPrices () {
 
 //clock
 setInterval(function(){
-    newsTrigger(20)
+    newsTrigger(21)
     setPrices()
     renderPlayer()
     renderWindowPosition()
@@ -155,7 +155,7 @@ setInterval(function(){
     chartCorpo1.update()
     chartCorpo2.update()
     chartCorpo3.update()
-}, 2000);
+}, 1000);
 
 //events
 
