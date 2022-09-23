@@ -20,12 +20,12 @@ function Position(name, size, entry) {
 
 var Positions = [];
 
-function News(name, text, pricefactor, duration, used) {
+function News(name, text, pricefactor, duration, activeticks) {
     this.name = name 
     this.text = text
     this.pricefactor = pricefactor
     this.duration = duration 
-    this.used = used
+    this.activeticks = activeticks
 };
 var News = [
     new News(
@@ -43,8 +43,6 @@ var News = [
         0
     ),
 ];
-
-console.log(News[getRandomInt(News.length)].text);
 
 function Player(funds) {
     this.funds = funds
@@ -81,6 +79,15 @@ function countTicks() {
     console.log(globalTicks)
 };
 
+function newsTrigger(newscycle){
+    countTicks()
+    if (globalTicks % newscycle === 0) {
+        return getRandomInt(News.length)
+    } else {
+        return null
+    }
+};
+
 function MarketRandomness(number) {
     var min = 1.05 * number
     var max = 0.95 * number 
@@ -103,10 +110,18 @@ function setPrices () {
     if (fundsHistory.length >= 50) {fundsHistory.shift()};
     fundsHistory.push(Math.round(calcNetworth(player.funds, Positions)));
 };
+//
+
+// News.activeticks <-- counts ative ticks and then timeouts, reset ticks at timeout
+// News.isActive <-- when news is triggered, set to true. So no overlapping events or just not trigger the same news twice.
+// if News.activeticks >= duration, News.isActive = false, and set price back to default randomness.
 
 //clock
 setInterval(function(){
-    countTicks()
+    let n = newsTrigger(40)
+    if (n != null) {
+        console.log(News[n].text)
+    };
     setPrices()
     renderPlayer()
     renderWindowPosition()
