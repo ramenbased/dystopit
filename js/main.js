@@ -28,6 +28,8 @@ var  player = new Player(1000)
 
 var globalTicks = 0
 
+var latestNews = []
+
 //filler data & fundhistory
 var fundsHistory = Array(50) 
 fundsHistory.fill(1000)
@@ -65,6 +67,15 @@ function getRandomInt(max) {
     return Math.floor(Math.random() * max);
 };
 
+var windownews = document.getElementById("windownews")
+
+function newsAggregator(newsarray, text, length) {
+    if (newsarray.length == length) {newsarray.shift()}
+    var today = new Date();
+    var time = today.getHours() + ":" + today.getMinutes();
+    newsarray.push(time + " >> " +text)
+}
+
 function newsTrigger(newscycle){
     countTicks()
     //if picked event is already triggered it skips. expand to iterate until it finds an inactive one?
@@ -73,6 +84,7 @@ function newsTrigger(newscycle){
         if (NewsFeed[n].isactive == false) {
             NewsFeed[n].isactive = true
             console.log(NewsFeed[n].text)
+            newsAggregator(latestNews, NewsFeed[n].text, 5)
         } else {
             return null
         }
@@ -114,7 +126,7 @@ function setPrices () {
                 newsItem.activeticks = 0
                 newsItem.isactive = false
             };
-            console.log("news0: " + NewsFeed[0].activeticks + " news1: " + NewsFeed[1].activeticks +" news2: " + NewsFeed[2].activeticks)
+            //console.log("news0: " + NewsFeed[0].activeticks + " news1: " + NewsFeed[1].activeticks +" news2: " + NewsFeed[2].activeticks)
             } else {
             calcPrices(n, 1)
         };
@@ -126,10 +138,11 @@ function setPrices () {
 
 //clock
 setInterval(function(){
-    newsTrigger(5)
+    newsTrigger(20)
     setPrices()
     renderPlayer()
     renderWindowPosition()
+    renderNews()
     chartFunds.update()
     chartCorpo0.update()
     chartCorpo1.update()
@@ -212,28 +225,26 @@ function tradeValidator (type, size, newSize) {
     }
 };
 
-
-//market stuff
-
-/*
-var windowMarket = document.getElementById("windowmarket")
-for (var n = 0; n < Corpos.length; n++) {
-    var chart = document.createElement("canvas")
-    chart.id = Corpos[n].name
-    windowMarket.appendChild(chart)
+function renderNews() {
+    var feed = document.getElementById("windownews")
+    if (feed.childElementCount != 0) {
+        while (feed.childElementCount != 0) {
+            feed.firstChild.remove()
+        }
+    } 
+    if (latestNews.length == 0) {
+            latestNews.push("###### TERMINAL CONNECTION ESTABLISHED ####### CITIZEN ID AUTHORIZED ####### CITYADMIN WISHES YOU A PRODUCTIVE DAY. EOL")
+        }
+    for (var n = 0; n < latestNews.length; n++) {
+                var newsitem = document.createElement("div")
+        newsitem.innerHTML = latestNews[n]
+        newsitem.className = "news"
+        feed.appendChild(newsitem)
+        if (feed.firstChild != null) {
+            feed.insertBefore(newsitem, feed.firstChild)
+        }
+    } 
 };
-*/
-
-/*
-var windowMarket = document.getElementById("windowmarket")
-var chart0 = document.createElement("canvas")
-var chart1 = document.createElement("canvas")
-chart0.id = Corpos[0].name
-chart1.id = Corpos[1].name
-windowMarket.appendChild(chart0)
-windowMarket.appendChild(chart1)
-*/
-
 //interface
 
 selectCorpo.oninput = function() {
