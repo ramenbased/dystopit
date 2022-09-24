@@ -20,33 +20,6 @@ function Position(name, size, entry) {
 
 var Positions = [];
 
-function News(name, text, pricefactor, duration, activeticks, isactive) {
-    this.name = name 
-    this.text = text
-    this.pricefactor = pricefactor
-    this.duration = duration 
-    this.activeticks = activeticks
-    this.isactive = isactive
-};
-var NewsFeed = [
-    new News(
-        Corpos[1].name,
-        "BREAKING: CITYADMIN:CAM CEO REZA CALLS FOR INTERNAL PROBE DUE TO SYNDICATE INTERVENTION.",
-        1.01,    //pricefactor
-        20,      //duration
-        0,      //activeticks
-        false,  //isactive
-    ),
-    new News(
-        Corpos[2].name,
-        "BREAKING: SYNDICATE COUNCIL ACCUSES PATENTNX OF CYBERATTACK INTO CHEMICAL COMPOUNDS DATABASE",
-        0.99,
-        20,
-        0,
-        false,
-    )
-];
-
 function Player(funds) {
     this.funds = funds
 };        
@@ -94,10 +67,16 @@ function getRandomInt(max) {
 
 function newsTrigger(newscycle){
     countTicks()
+    //if picked event is already triggered it skips. expand to iterate until it finds an inactive one?
     if (globalTicks % newscycle === 0) {
         var n = getRandomInt(NewsFeed.length)
-        NewsFeed[n].isactive = true
-        console.log(NewsFeed[n].text)
+        if (NewsFeed[n].isactive == false) {
+            NewsFeed[n].isactive = true
+            console.log(NewsFeed[n].text)
+        } else {
+            return null
+        }
+
     } else {
         return null
     }
@@ -112,8 +91,9 @@ function calcPrices(n, i) {
 };
 
 function findActiveNews() {
-    rv = null
+    var rv = null 
     //limited to one news, in future return array of active news??
+    //accumulates news apparently, giving priority to last in found in iteration. newspool might accumulate indef.. 
     for (var n = 0; n < NewsFeed.length; n++) {
         if (NewsFeed[n].isactive === true) {
             rv = n
@@ -134,7 +114,7 @@ function setPrices () {
                 newsItem.activeticks = 0
                 newsItem.isactive = false
             };
-            console.log("news0: " + NewsFeed[0].activeticks + "    news1: " + NewsFeed[1].activeticks)
+            console.log("news0: " + NewsFeed[0].activeticks + " news1: " + NewsFeed[1].activeticks +" news2: " + NewsFeed[2].activeticks)
             } else {
             calcPrices(n, 1)
         };
@@ -146,7 +126,7 @@ function setPrices () {
 
 //clock
 setInterval(function(){
-    newsTrigger(21)
+    newsTrigger(5)
     setPrices()
     renderPlayer()
     renderWindowPosition()
@@ -155,7 +135,7 @@ setInterval(function(){
     chartCorpo1.update()
     chartCorpo2.update()
     chartCorpo3.update()
-}, 1000);
+}, 2000);
 
 //events
 
