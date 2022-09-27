@@ -44,6 +44,24 @@ const dataCorpo3 = {
     }]
 };
 
+const dataCorpo4 = {
+    labels: Corpos[4].pricehistory,
+    datasets: [{
+    borderColor: linecolor,
+    borderWidth: 1.2,
+    data: Corpos[4].pricehistory,
+    }]
+};
+
+const dataCorpo5 = {
+    labels: Corpos[5].pricehistory,
+    datasets: [{
+    borderColor: linecolor,
+    borderWidth: 1.2,
+    data: Corpos[5].pricehistory,
+    }]
+};
+
 const options = {
         animation: false,
         responsive: true,
@@ -124,4 +142,26 @@ const configCorpo3 = {
 const chartCorpo3 = new Chart(
 document.getElementById(Corpos[3].name),
 configCorpo3
+)
+
+const configCorpo4 = {
+type: 'line',
+data: dataCorpo4,
+options: options,
+};
+
+const chartCorpo4 = new Chart(
+document.getElementById(Corpos[4].name),
+configCorpo4
+)
+
+const configCorpo5 = {
+type: 'line',
+data: dataCorpo5,
+options: options,
+};
+
+const chartCorpo5 = new Chart(
+document.getElementById(Corpos[5].name),
+configCorpo5
 )

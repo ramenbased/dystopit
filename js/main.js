@@ -1,4 +1,7 @@
-function Corpo(name, price, ticker, pricehistory) {
+//TODO: count times News is used to stop repetition
+
+
+function Corpo(name, price, ticker, pricehistory, used) {
     this.name = name;
     this.price = price;
     this.ticker = ticker;
@@ -7,9 +10,11 @@ function Corpo(name, price, ticker, pricehistory) {
 
 var Corpos = [
     new Corpo("PatentNX", 40, "PTX", [40]), 
-    new Corpo("CityAdmin", 10, "CAM", [1]),
-    new Corpo("The Syndicate", 5, "SYN", [1]),
-    new Corpo("Saphire Real Estate", 2, "SRE", [1])
+    new Corpo("CityAdmin", 10, "CAM", [10]),
+    new Corpo("The Syndicate", 5, "SYN", [5]),
+    new Corpo("Saphire Real Estate", 2, "SRE", [2]),
+    new Corpo("Ancorp-Trade", 1, "ANC", [1]),
+    new Corpo("Faith Unlimited", 500, "GOD", [400])
 ];
 
 function Position(name, size, entry) {
@@ -28,7 +33,6 @@ var  player = new Player(1000)
 
 var globalTicks = 0
 
-var latestNews = []
 
 //filler data & fundhistory
 var fundsHistory = Array(50) 
@@ -67,32 +71,6 @@ function getRandomInt(max) {
     return Math.floor(Math.random() * max);
 };
 
-var windownews = document.getElementById("windownews")
-
-function newsAggregator(newsarray, text, length) {
-    if (newsarray.length == length) {newsarray.shift()}
-    var today = new Date();
-    var time = today.getHours() + ":" + today.getMinutes();
-    newsarray.push(time + " >> " +text)
-}
-
-function newsTrigger(newscycle){
-    countTicks()
-    //if picked event is already triggered it skips. expand to iterate until it finds an inactive one?
-    if (globalTicks % newscycle === 0) {
-        var n = getRandomInt(NewsFeed.length)
-        if (NewsFeed[n].isactive == false) {
-            NewsFeed[n].isactive = true
-            console.log(NewsFeed[n].text)
-            newsAggregator(latestNews, NewsFeed[n].text, 5)
-        } else {
-            return null
-        }
-
-    } else {
-        return null
-    }
-};
 
 function calcPrices(n, i) {
    let alchemy = MarketRandomness(i)
@@ -100,19 +78,6 @@ function calcPrices(n, i) {
    Positions[n].size *= alchemy
    if (Corpos[n].pricehistory.length >= 200) {Corpos[n].pricehistory.shift()}
    Corpos[n].pricehistory.push(Corpos[n].price)
-};
-
-function findActiveNews() {
-    var rv = null 
-    //limited to one news, in future return array of active news??
-    //accumulates news apparently, giving priority to last in found in iteration. newspool might accumulate indef.. 
-    for (var n = 0; n < NewsFeed.length; n++) {
-        if (NewsFeed[n].isactive === true) {
-            rv = n
-        };
-    };
-    //console.log("findActiveNews() returns: " ,rv)
-    return rv
 };
 
 function setPrices () {
@@ -135,7 +100,7 @@ function setPrices () {
     if (fundsHistory.length >= 50) {fundsHistory.shift()};
     fundsHistory.push(Math.round(calcNetworth(player.funds, Positions)));
 };
-
+  
 //clock
 setInterval(function(){
     newsTrigger(20)
@@ -148,9 +113,74 @@ setInterval(function(){
     chartCorpo1.update()
     chartCorpo2.update()
     chartCorpo3.update()
-}, 2000);
+    chartCorpo4.update()
+    chartCorpo5.update()
+}, 100);
 
-//events
+
+//news
+var windownews = document.getElementById("windownews")
+
+function newsAggregator(newsarray, text, length) {
+    if (newsarray.length == length) {newsarray.shift()}
+    var today = new Date();
+    var time = today.getHours() + ":" + String(today.getMinutes()).padStart(2, "0");
+    newsarray.push(time + " >> " +text)
+};
+
+function findActiveNews() {
+    var rv = null 
+    //limited to one news, in future return array of active news??
+    //accumulates news apparently, giving priority to last in found in iteration. newspool might accumulate indef.. 
+    for (var n = 0; n < NewsFeed.length; n++) {
+        if (NewsFeed[n].isactive === true) {
+            rv = n
+        };
+    };
+    //console.log("findActiveNews() returns: " ,rv)
+    return rv
+};
+
+function findLeastUsedNews() {
+    var rv = []
+    var temp = []
+    for (var n = 0; n < NewsFeed.length; n++) {
+        temp.push(Number(NewsFeed[n].used))
+    } 
+    var least = Math.min(...temp)
+    for (var n = 0; n < NewsFeed.length; n++) {
+        if (NewsFeed[n].used <= least) {
+            rv.push(n)
+        }
+    }
+    return rv
+};
+
+function pickNews() {
+    var n = findLeastUsedNews()
+    var rv = n[getRandomInt(n.length)]
+    return rv
+}
+
+var latestNews = []
+function newsTrigger(cycletime){
+    countTicks()
+    //if picked event is already triggered it skips. expand to iterate until it finds an inactive one?
+    var least = findLeastUsedNews()
+    if (globalTicks % cycletime === 0) {
+            var n = pickNews()
+            if (NewsFeed[n].isactive == false) {
+                NewsFeed[n].isactive = true
+                NewsFeed[n].used += 1
+                console.log(NewsFeed[n].text)
+                newsAggregator(latestNews, NewsFeed[n].text, 5)
+            } else {
+                return null
+            }
+    } else {
+        return null
+    }
+};
 
 //tradewindow
 var selectCorpo = document.getElementById("corpos");
@@ -176,8 +206,21 @@ for (var n = 0; n < Corpos.length; n++) {
 selectedCorpo = selectCorpo.value
 selectedSize = 0
 
-var windowPositions = document.getElementById("windowpositions");
+//charts
 
+var windowmarket = document.getElementById("windowmarket")
+for (var n = 0; n < Corpos.length; n++) {
+    var div = document.createElement("div")
+    div.classList.add("stockprice")
+    div.innerHTML = Corpos[n].ticker
+    windowmarket.appendChild(div)
+    var c = document.createElement("canvas")
+    c.id = Corpos[n].name
+    div.appendChild(c)
+};
+
+//
+var windowPositions = document.getElementById("windowpositions");
 
 function renderWindowPosition() {
     if (windowPositions.childElementCount != 0) {
@@ -245,6 +288,7 @@ function renderNews() {
         }
     } 
 };
+
 //interface
 
 selectCorpo.oninput = function() {
