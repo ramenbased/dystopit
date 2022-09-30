@@ -5,14 +5,9 @@
         <link rel="stylesheet" href="style/style.css">
     </head>
     <body>
-        <div id="windowmarket">
-            <div class="stockprice">PTX<canvas id="PatentNX"></canvas></div>
-            <div class="stockprice">CAM<canvas id="CityAdmin"></canvas></div>
-            <div class="stockprice">SYN<canvas id="The Syndicate""></canvas></div>
-            <div class="stockprice">SRE<canvas id="Saphire Real Estate"></canvas></div>
-        </div>
+        <div>AUTHORIZED CITYADMIN TERMINAL: TRADING MODULE</div>
+        <div id="windowmarket"></div> 
         <div id="windowtrade">
-        </div>
             <select id="corpos" selected></select>
             <input id="size" type="number" placeholder="ENTER SIZE" autocomplete="off" min="0" step="100"></input>
             <button id="buy">buy</button>
@@ -21,13 +16,16 @@
             <button id="sellmax">sell max</button>
         </div>
         <div id="windowfunds"></div>
+        <div id="windowpositions"></div>
         <div id="chartfundssize">
             <canvas id="chartfunds"></canvas>
         </div>
-        <div id="windowpositions"></div>
+        <div id="windownews"></div>
+
         
-        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-        <script src="js/main.js"></script>
-        <script src="js/charts.js"></script>
+        <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <script type="text/javascript" src="js/main.js"></script>
+        <script type="text/javascript" src="js/news.js"></script>
+        <script type="text/javascript" src="js/charts.js"></script>
     </body>
 </html>

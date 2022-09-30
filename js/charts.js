@@ -1,4 +1,4 @@
-var linecolor = "rgb(255, 165, 0)"
+var linecolor = "lightblue"
 
 const dataPlayerFunds = {
     labels: fundsHistory,
@@ -78,7 +78,7 @@ const options = {
             y: {
                 position: "right",
                 ticks: {
-                    color: "orange",
+                    color: linecolor,
                 }
             }   
         },

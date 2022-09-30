@@ -6,7 +6,7 @@ function Corpo(name, price, ticker, pricehistory, used) {
     this.price = price;
     this.ticker = ticker;
     this.pricehistory = pricehistory
-};
+}
 
 var Corpos = [
     new Corpo("PatentNX", 40, "PTX", [40]), 
@@ -15,19 +15,19 @@ var Corpos = [
     new Corpo("Saphire Real Estate", 2, "SRE", [2]),
     new Corpo("Ancorp-Trade", 1, "ANC", [1]),
     new Corpo("Faith Unlimited", 500, "GOD", [400])
-];
+]
 
 function Position(name, size, entry) {
     this.name = name;
     this.size = size;
     this.entry = entry
-};
+}
 
-var Positions = [];
+var Positions = []
 
 function Player(funds) {
     this.funds = funds
-};        
+}        
 
 var  player = new Player(1000)
 
@@ -43,8 +43,8 @@ for (var n = 0; n < Corpos.length; n++) {
         var rv = history[history.length -1] * MarketRandomness(1)
         history.push(rv)
         Corpos[n].price = rv
-    };
-};
+    }
+}
 
 //funky funcs
 function calcNetworth(funds, positions) {
@@ -52,24 +52,24 @@ function calcNetworth(funds, positions) {
     rv += funds
     for (var n = 0; n < positions.length; n++) {
         rv += positions[n].size
-    };
-    return rv;
-};
+    }
+    return rv
+}
 
 function countTicks() {
     globalTicks += 1 
     //console.log(globalTicks)
-};
+}
 
 function MarketRandomness(number) {
     var min = 1.05 * number
     var max = 0.95 * number 
-    return  Math.random() * (max - min) + min;
-};
+    return  Math.random() * (max - min) + min
+}
 
 function getRandomInt(max) {
-    return Math.floor(Math.random() * max);
-};
+    return Math.floor(Math.random() * max)
+}
 
 
 function calcPrices(n, i) {
@@ -78,7 +78,7 @@ function calcPrices(n, i) {
    Positions[n].size *= alchemy
    if (Corpos[n].pricehistory.length >= 200) {Corpos[n].pricehistory.shift()}
    Corpos[n].pricehistory.push(Corpos[n].price)
-};
+}
 
 function setPrices () {
     let activeNews = findActiveNews()
@@ -94,12 +94,12 @@ function setPrices () {
             //console.log("news0: " + NewsFeed[0].activeticks + " news1: " + NewsFeed[1].activeticks +" news2: " + NewsFeed[2].activeticks)
             } else {
             calcPrices(n, 1)
-        };
-    };
+        }
+    }
 
-    if (fundsHistory.length >= 50) {fundsHistory.shift()};
-    fundsHistory.push(Math.round(calcNetworth(player.funds, Positions)));
-};
+    if (fundsHistory.length >= 50) {fundsHistory.shift()}
+    fundsHistory.push(Math.round(calcNetworth(player.funds, Positions)))
+}
   
 //clock
 setInterval(function(){
@@ -115,8 +115,7 @@ setInterval(function(){
     chartCorpo3.update()
     chartCorpo4.update()
     chartCorpo5.update()
-}, 100);
-
+}, 2000)
 
 //news
 var windownews = document.getElementById("windownews")
@@ -126,7 +125,7 @@ function newsAggregator(newsarray, text, length) {
     var today = new Date();
     var time = today.getHours() + ":" + String(today.getMinutes()).padStart(2, "0");
     newsarray.push(time + " >> " +text)
-};
+}
 
 function findActiveNews() {
     var rv = null 
@@ -135,11 +134,11 @@ function findActiveNews() {
     for (var n = 0; n < NewsFeed.length; n++) {
         if (NewsFeed[n].isactive === true) {
             rv = n
-        };
-    };
+        }
+    }
     //console.log("findActiveNews() returns: " ,rv)
     return rv
-};
+}
 
 function findLeastUsedNews() {
     var rv = []
@@ -154,7 +153,7 @@ function findLeastUsedNews() {
         }
     }
     return rv
-};
+}
 
 function pickNews() {
     var n = findLeastUsedNews()
@@ -166,7 +165,6 @@ var latestNews = []
 function newsTrigger(cycletime){
     countTicks()
     //if picked event is already triggered it skips. expand to iterate until it finds an inactive one?
-    var least = findLeastUsedNews()
     if (globalTicks % cycletime === 0) {
             var n = pickNews()
             if (NewsFeed[n].isactive == false) {
@@ -180,7 +178,7 @@ function newsTrigger(cycletime){
     } else {
         return null
     }
-};
+}
 
 //tradewindow
 var selectCorpo = document.getElementById("corpos");
@@ -194,14 +192,14 @@ var selectMaxSell = document.getElementById("sellmax")
 for (var n = 0; n < Corpos.length; n++) {
     //entry 0 will probably bug
     Positions.push(new Position(Corpos[n].name, 0, 0))
-}; 
+} 
 
 for (var n = 0; n < Corpos.length; n++) {
     var optionSelectCorpo = document.createElement("option")
     optionSelectCorpo.text = Corpos[n].name + ":" + Corpos[n].ticker
     optionSelectCorpo.value = Corpos[n].name
     selectCorpo.add(optionSelectCorpo)
-};
+}
 
 selectedCorpo = selectCorpo.value
 selectedSize = 0
@@ -217,7 +215,7 @@ for (var n = 0; n < Corpos.length; n++) {
     var c = document.createElement("canvas")
     c.id = Corpos[n].name
     div.appendChild(c)
-};
+}
 
 //
 var windowPositions = document.getElementById("windowpositions");
@@ -226,8 +224,8 @@ function renderWindowPosition() {
     if (windowPositions.childElementCount != 0) {
         while (windowPositions.firstChild) {
             windowPositions.firstChild.remove()
-        };
-    };
+        }
+    }
 
     for (var n = 0; n < Positions.length; n ++) {
         if (Positions[n].size != 0) {
@@ -238,9 +236,9 @@ function renderWindowPosition() {
             var entry = Math.round(Positions[n].entry)
             elementPosition.innerHTML = tkr + ">> ENTRY:" + entry + "$ POSITION:" + pos + "$ P/L:" + (pos-entry) + "$";
             windowPositions.appendChild(elementPosition);
-        };
-    };
-};
+        }
+    }
+}
 
 var windowFunds = document.getElementById("windowfunds")
 
@@ -261,12 +259,12 @@ function tradeValidator (type, size, newSize) {
         console.log("type buy")
         return true;
     } else if ( type == "sell" && size >= newSize) {
-        console.log ("type sell");
+        console.log ("type sell")
         return true;
     } else { 
         return false;
     }
-};
+}
 
 function renderNews() {
     var feed = document.getElementById("windownews")
@@ -276,7 +274,7 @@ function renderNews() {
         }
     } 
     if (latestNews.length == 0) {
-            latestNews.push("###### TERMINAL CONNECTION ESTABLISHED ####### CITIZEN ID AUTHORIZED ####### CITYADMIN WISHES YOU A PRODUCTIVE DAY. EOL")
+            latestNews.push("###### TERMINAL CONNECTION ESTABLISHED ####### NEWSFEED IS ONLINE ####### CITYADMIN WISHES YOU A PRODUCTIVE DAY")
         }
     for (var n = 0; n < latestNews.length; n++) {
                 var newsitem = document.createElement("div")
@@ -287,17 +285,17 @@ function renderNews() {
             feed.insertBefore(newsitem, feed.firstChild)
         }
     } 
-};
+}
 
 //interface
 
 selectCorpo.oninput = function() {
     selectedCorpo = selectCorpo.value
-};
+}
 
 selectSize.onchange = function() {
     selectedSize = Number(selectSize.value)
-};
+}
 
 selectBuy.onclick = function() {
     for (var i = 0; i < Positions.length; i++) {
@@ -311,7 +309,7 @@ selectBuy.onclick = function() {
     renderWindowPosition()
     renderPlayer()
     //console.log("NEW BUY! Corpo:", selectedCorpo, "Size:", sSaphire Real Estate 1200 2electedSize);
-};
+}
 
 selectSell.onclick = function() {
     for (var i = 0; i < Positions.length; i++) {
@@ -324,7 +322,7 @@ selectSell.onclick = function() {
     renderWindowPosition()
     renderPlayer()
     //console.log("NEW SELL! Corpo:", selectedCorpo, "Size:", selectedSize);
-};
+}
 
 selectMaxSell.onclick = function() {
     for (var n = 0; n < Positions.length; n++) {
@@ -336,7 +334,7 @@ selectMaxSell.onclick = function() {
     }
     renderWindowPosition()
     renderPlayer()
-};
+}
 
 selectMaxBuy.onclick = function() {
     for (var n = 0; n < Positions.length; n++) {
@@ -348,4 +346,4 @@ selectMaxBuy.onclick = function() {
     }
     renderWindowPosition()
     renderPlayer()
-};
+}

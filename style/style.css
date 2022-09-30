@@ -1,12 +1,12 @@
 * {
     background: black;
-    color: orange;
+    color: cyan;
     font-family: monospace; 
-    font-size: 13pt;
+    font-size: 10pt;
 }
 
 button, select, input{
-    border: 2px solid orange;
+    border: 2px solid cyan;
     cursor: pointer;
 }
 
@@ -14,12 +14,12 @@ input {
     cursor: text;
 }
 
-#chartfundssize {
-    height: 100px;
+#windownews .news{
+    color: orangered;
 }
 
-#size {
-    width: 120px;
+#chartfundssize {
+    height: 75px;
 }
 
 #windowmarket {
@@ -27,8 +27,9 @@ input {
 }
 
 .stockprice {
-    height: 200px;
-    width: 300px;
+    padding: 10px;
+    height: 100px;
+    width: 220px;
     display: inline-block;
 
 }
