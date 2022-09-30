@@ -1,6 +1,3 @@
-//TODO: count times News is used to stop repetition
-
-
 function Corpo(name, price, ticker, pricehistory, used) {
     this.name = name;
     this.price = price;
@@ -32,7 +29,6 @@ function Player(funds) {
 var  player = new Player(1000)
 
 var globalTicks = 0
-
 
 //filler data & fundhistory
 var fundsHistory = Array(50) 
@@ -83,27 +79,40 @@ function calcPrices(n, i) {
 function setPrices () {
     let activeNews = findActiveNews()
     for (var n = 0; n < Corpos.length; n++) {
-        if (activeNews != null && NewsFeed[activeNews].name === Corpos[n].name) {
-            var newsItem = NewsFeed[activeNews]
-            calcPrices(n, newsItem.pricefactor)
-            newsItem.activeticks += 1
-            if (newsItem.activeticks == newsItem.duration) {
-                newsItem.activeticks = 0
-                newsItem.isactive = false
-            };
-            //console.log("news0: " + NewsFeed[0].activeticks + " news1: " + NewsFeed[1].activeticks +" news2: " + NewsFeed[2].activeticks)
-            } else {
+            if (activeNews.length == 0) {
+                calcPrices(n, 1)
+            }
+            for (var i = 0; i < activeNews.length; i ++) {
+                var active = activeNews[i]
+                if (NewsFeed[active].name == Corpos[n].name) {
+                    var newsItem = NewsFeed[active]
+                    calcPrices(n, newsItem.pricefactor)
+                    console.log(Corpos[n].name +" "+ newsItem.pricefactor)
+                } else {
             calcPrices(n, 1)
+            }
         }
     }
-
     if (fundsHistory.length >= 50) {fundsHistory.shift()}
     fundsHistory.push(Math.round(calcNetworth(player.funds, Positions)))
+}
+  
+function newsTick() {
+    for (var n = 0; n < NewsFeed.length; n++) {
+        if (NewsFeed[n].isactive == true) {
+            NewsFeed[n].activeticks += 1
+        }
+        if (NewsFeed[n].activeticks == NewsFeed[n].duration) {
+            NewsFeed[n].isactive = false
+            NewsFeed[n].activeticks = 0
+        }
+    }
 }
   
 //clock
 setInterval(function(){
     newsTrigger(20)
+    newsTick()
     setPrices()
     renderPlayer()
     renderWindowPosition()
@@ -128,12 +137,12 @@ function newsAggregator(newsarray, text, length) {
 }
 
 function findActiveNews() {
-    var rv = null 
+    var rv = [] 
     //limited to one news, in future return array of active news??
     //accumulates news apparently, giving priority to last in found in iteration. newspool might accumulate indef.. 
     for (var n = 0; n < NewsFeed.length; n++) {
         if (NewsFeed[n].isactive === true) {
-            rv = n
+            rv.push(n)
         }
     }
     //console.log("findActiveNews() returns: " ,rv)
@@ -164,19 +173,23 @@ function pickNews() {
 var latestNews = []
 function newsTrigger(cycletime){
     countTicks()
-    //if picked event is already triggered it skips. expand to iterate until it finds an inactive one?
     if (globalTicks % cycletime === 0) {
-            var n = pickNews()
-            if (NewsFeed[n].isactive == false) {
-                NewsFeed[n].isactive = true
-                NewsFeed[n].used += 1
-                console.log(NewsFeed[n].text)
-                newsAggregator(latestNews, NewsFeed[n].text, 5)
-            } else {
-                return null
+        var n = pickNews()
+        //kills previous news if news form same corpo triggers
+        latestName = NewsFeed[n].name
+        for (var c = 0; c < NewsFeed.length; c++) {
+            if (NewsFeed[c].name == latestName) {
+                NewsFeed[c].isactive = false
+                NewsFeed[c].activeticks = 0
             }
-    } else {
-        return null
+        }
+        //    
+        if (NewsFeed[n].isactive == false) {
+            NewsFeed[n].isactive = true
+            NewsFeed[n].used += 1
+            console.log(NewsFeed[n].text)
+            newsAggregator(latestNews, NewsFeed[n].text, 5)
+        } 
     }
 }
 
